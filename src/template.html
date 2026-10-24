@@ -22,6 +22,13 @@
   .eval-list { margin: 6px 0 0; padding-left: 20px; font-size: 14px; font-weight: 600; color: var(--ink-soft); line-height: 1.75; }
   .eval-list b { color: var(--ink); }
   @media (max-width: 768px) { .fin-grid { grid-template-columns: 1fr; } }
+  .file-step { font-size: 15px; font-weight: 900; margin: 22px 0 8px; }
+  .file-step small { font-size: 12.5px; font-weight: 700; color: var(--ink-mute); margin-left: 6px; }
+  .file-shot { display: block; width: 100%; max-width: 820px; border: 1px solid var(--border); border-radius: 12px; }
+  .num-table { width: 100%; max-width: 820px; border-collapse: collapse; margin: 10px 0 4px; table-layout: fixed; }
+  .num-table td { border: 1px solid var(--border); padding: 9px 12px; font-size: 14px; font-weight: 600; line-height: 1.6; color: var(--ink-soft); vertical-align: middle; background: var(--white); }
+  .num-table td.n { width: 52px; text-align: center; color: #e03131; font-size: 22px; line-height: 1.2; }
+  .num-table b { color: var(--ink); }
 </style>
 </head>
 <body>
@@ -147,9 +154,57 @@
     <div class="sub-title" style="margin-top:20px">신고는 이렇게</div>
     <ul class="eval-list">
       <li>증여세는 받은 배우자가 <b>증여받은 달 말일부터 3개월 안</b>에 신고해요. 세금이 0원이어도 신고해 두면 증여일·평가액이 기록으로 남아, 배우자가 팔 때 취득가액 근거가 돼요.</li>
-      <li>홈택스 신고 화면은 <a href="https://ttokjaetv.github.io/child-gift/#filing" target="_blank" rel="noopener" style="color:var(--accent);font-weight:800">자녀 증여 계산기의 신고 안내 →</a>와 같은 메뉴예요. 현금이 아니라 주식이라 '현금만 받았나요?'에는 '아니오'를 고르고, 종목·수량·평가액을 넣어요.</li>
+      <li>메뉴는 홈택스 → 세금신고 → 증여세 신고 → <b>맞춤신고 찾기</b>예요(첫 화면은 <a href="https://ttokjaetv.github.io/child-gift/#filing" target="_blank" rel="noopener" style="color:var(--accent);font-weight:800">자녀 증여 계산기의 신고 안내 →</a>와 같아요). 주식은 아래처럼 이어져요.</li>
       <li>주식은 증권사에서 <b>배우자 계좌로 대체(이체) 출고</b>해서 넘겨요. 판 돈은 배우자 계좌에 두고 배우자 돈으로 쓰세요.</li>
     </ul>
+
+    <div class="file-step">1. 맞춤신고 질문 — '현금만 받았나요?'에 <b>아니오</b> <small>2026-10-24 홈택스 화면 · 개인정보는 가렸어요</small></div>
+    <img class="file-shot" src="img/stock1_questions.png" alt="홈택스 증여세 맞춤신고 질문에서 현금만 증여에 아니오를 고른 화면" loading="lazy">
+    <table class="num-table">
+      <tr><td class="n">❶</td><td><b>연락처</b> — 받는 배우자의 연락처(캡처는 예시 번호).</td></tr>
+      <tr><td class="n">❷</td><td><b>거주자인가요?</b> — 국내에 살면 '예'.</td></tr>
+      <tr><td class="n">❸</td><td><b>현금만 받았나요?</b> — 주식이니 <b>'아니오'</b>. 현금과 달리 금액 질문 없이 바로 정기신고로 넘어가요.</td></tr>
+      <tr><td class="n">❹</td><td><b>증여세 정기 신고하기</b> — 신고서 작성 화면으로 이동(아직 제출 아님).</td></tr>
+    </table>
+
+    <div class="file-step">2. 기본정보 확인 → 저장하기</div>
+    <img class="file-shot" src="img/stock2_basic.png" alt="홈택스 증여세 정기신고 기본정보 화면" loading="lazy">
+    <table class="num-table">
+      <tr><td class="n">❶</td><td><b>증여일자</b> — 주식을 배우자 계좌로 옮긴 날. 신고서는 '정기신고'.</td></tr>
+      <tr><td class="n">❷</td><td><b>증여자</b> — 앞에서 넣은 주민등록번호·성명이 채워져 있어요.</td></tr>
+      <tr><td class="n">❸</td><td><b>수증자</b>(받는 배우자) — 주민등록번호 옆 <b>[확인]</b>을 꼭 누르세요. 안 누르면 저장이 안 돼요.</td></tr>
+      <tr><td class="n">❹</td><td><b>주소</b> — [확인]을 누르면 자동으로 채워져요.</td></tr>
+      <tr><td class="n">❺</td><td><b>증여자와의 관계·연락처</b> — 관계는 자동, 연락처는 앞에서 넣은 번호.</td></tr>
+      <tr><td class="n">❻</td><td><b>저장하기</b> → "저장 후 다음 화면으로 이동" 확인. 이때부터 '작성중' 신고서로 저장돼요.</td></tr>
+    </table>
+
+    <div class="file-step">3. 증여재산가액 [입력/수정] → 주식 입력</div>
+    <img class="file-shot" src="img/stock3_asset.png" alt="홈택스 증여재산명세 입력 화면에 해외 상장주식을 넣은 예시" loading="lazy">
+    <table class="num-table">
+      <tr><td class="n">❶</td><td><b>증여재산의 구분</b> — '증여재산 - 일반'.</td></tr>
+      <tr><td class="n">❷</td><td><b>증여재산의 종류</b> — 상장 주식·ETF는 <b>'유가증권(상장)'</b>.</td></tr>
+      <tr><td class="n">❸</td><td><b>평가방법</b> — 필수 칸이에요. 캡처는 예시로 '기준시가 등 보충적평가법'을 골랐어요. 해외 상장 주식에 어느 항목이 맞는지는 국세청 공식 안내를 확인하지 못했으니, 신고 전에 126(국세상담센터)에 확인하세요.</td></tr>
+      <tr><td class="n">❹</td><td><b>국외재산 여부</b> — 해외 증권시장 주식이면 '여'.</td></tr>
+      <tr><td class="n">❺</td><td><b>국가명</b> — [검색]에서 '미국' 선택.</td></tr>
+      <tr><td class="n">❻</td><td><b>단가·수량</b> — 1주 평가액(원)과 주식 수. 넣으면 평가가액이 자동 계산돼요.</td></tr>
+      <tr><td class="n">❼</td><td><b>평가가액</b> — 이 계산기의 <b>'증여 평가액'</b>과 같은 금액(예시 3억원). 국외재산소재지 칸에는 '미국 증권시장'처럼 적어요.</td></tr>
+    </table>
+    <img class="file-shot" src="img/stock4_list.png" alt="증여재산명세 목록에 주식이 추가된 화면" loading="lazy" style="margin-top:14px">
+    <table class="num-table">
+      <tr><td class="n">❶</td><td><b>입력하기</b> — 아래 목록에 한 줄로 추가돼요. 종목이 여러 개면 종목마다 반복.</td></tr>
+      <tr><td class="n">❷</td><td><b>증여재산명세 목록</b> — 넣은 내용 확인. 고치려면 체크 후 '선택수정'.</td></tr>
+      <tr><td class="n">❸</td><td><b>입력완료</b> — 신고서 요약 화면에 반영돼요.</td></tr>
+    </table>
+
+    <div class="file-step">4. 신고서 확인 — '이대로 신고하기'가 제출이에요</div>
+    <img class="file-shot" src="img/stock5_return.png" alt="홈택스 증여세 신고서 요약 화면에 주식 3억원과 배우자 공제가 반영된 예시" loading="lazy">
+    <table class="num-table">
+      <tr><td class="n">❶</td><td><b>증여재산가액</b> — 넣은 주식 평가액(예시 3억원). 10년 안에 배우자에게 받은 증여가 있으면 '증여재산가산액'에 넣어요.</td></tr>
+      <tr><td class="n">❷</td><td><b>증여재산공제 · 배우자</b> — 10년 합계 <span data-rule="GIFT.deductionSpouse/1e8">6</span>억원 안에서 자동으로 들어가요.</td></tr>
+      <tr><td class="n">❸</td><td><b>이대로 신고하기</b> — 누르면 제출 단계예요. 금액을 다 확인한 뒤 누르세요.</td></tr>
+      <tr><td class="n">❹</td><td><b>세액계산 흐름</b> — 공제 안이면 과세표준·낼 세금이 0원. 이 계산기의 '배우자가 낼 증여세'와 맞춰 보세요.</td></tr>
+    </table>
+    <p class="note">캡처는 2026-10-24 홈택스 화면이고, 금액·연락처는 예시값이에요. 제출 전 '작성중' 신고서를 지우려면 신고서 작성 화면 위쪽 <b>신고서불러오기 → 선택 → 새로작성하기</b>를 누르면 "작성중인 신고서는 삭제가 가능합니다"가 떠요.</p>
   </div>
 
   <div class="insight-box">
