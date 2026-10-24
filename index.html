@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>배우자 증여 절세 계산기 · 똑재TV</title>
+<meta name="description" content="오른 해외주식을 배우자에게 증여한 뒤 배우자가 팔면 양도세가 얼마나 줄어드는지 — 배우자 증여재산공제 6억원(10년), 이월과세(증여 후 1년 안 매도), 해외주식 양도세 기본공제 250만원·22%를 반영해 내가 그대로 팔 때와 비교하는 무료 계산기. 2026년 세법 기준.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #F5EFE6; --bg-alt: #EFE7DA;
+    --ink: #1A1A1A; --ink-soft: #4A4A4A; --ink-mute: #8B8276;
+    --accent: #D9542B; --accent-soft: #F4D5C4;
+    --border: #E5DCC8; --white: #FBF7F0;
+    --brown: #8B6F47; --beige-gold: #C4A57B;
+    --dark-warm: #3A2F26; --dark-warm-soft: #5A4A3D;
+    --green: #4A5A4A; --green-soft: #DDE3D8;
+    --blue: #2E5E8A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: var(--bg); color: var(--ink); padding: 32px 24px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .hub-back { display: inline-block; margin-bottom: 14px; font-size: 13px; font-weight: 600; color: var(--ink-mute); text-decoration: none; }
+  .hub-back:hover { color: var(--accent); }
+  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 48px; }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon { width: 36px; height: 36px; background: var(--dark-warm); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: 900; font-size: 18px; }
+  .logo-name { font-size: 16px; font-weight: 900; letter-spacing: -0.3px; }
+  .logo-sub { font-size: 10px; color: var(--ink-mute); font-weight: 700; letter-spacing: 1px; }
+  .base-date { font-size: 12px; font-weight: 700; color: var(--ink-mute); background: var(--white); border: 1px solid var(--border); padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+  .hero { text-align: left; margin-bottom: 32px; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; background: var(--white); border: 1.5px solid var(--accent); color: var(--accent); padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 28px; }
+  .tag .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+  .hero-title { font-size: 64px; font-weight: 900; letter-spacing: -2.5px; line-height: 1.05; margin-bottom: 20px; }
+  .underline-mark { background: linear-gradient(transparent 60%, var(--accent-soft) 60%); padding: 0 4px; }
+  .hero-desc { font-size: 17px; color: var(--ink-soft); line-height: 1.7; font-weight: 500; }
+  .top-cta { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 16px; padding: 18px 24px; margin-bottom: 32px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+  .top-cta-text { font-size: 14px; font-weight: 600; color: var(--ink-soft); }
+  .top-cta-links { display: flex; gap: 8px; flex-wrap: wrap; }
+  .top-cta-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; background: var(--white); border: 1.5px solid var(--border); color: var(--ink); }
+  .top-cta-link.primary { background: var(--accent); color: var(--white); border-color: var(--accent); }
+  .naver-mark { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: #03C75A; color: #FFFFFF; font-weight: 900; font-size: 11px; border-radius: 3px; line-height: 1; flex-shrink: 0; }
+
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 28px; margin-bottom: 32px; }
+  .step-label { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .step-line { width: 28px; height: 2px; background: var(--accent); }
+  .step-text { font-size: 12px; font-weight: 800; letter-spacing: 1.5px; color: var(--accent); }
+  .step-title { font-size: 22px; font-weight: 900; letter-spacing: -0.6px; margin-bottom: 6px; }
+  .step-desc { font-size: 14px; color: var(--ink-mute); font-weight: 600; margin-bottom: 22px; }
+  .step-desc b { color: var(--ink); font-weight: 800; }
+  .label { font-size: 13px; font-weight: 800; color: var(--ink-soft); margin-bottom: 8px; display: block; letter-spacing: -0.2px; }
+  input, select { background: var(--white); border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 14px; font-family: inherit; font-size: 17px; color: var(--ink); font-weight: 700; transition: all 0.15s ease; width: 100%; }
+  input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .input-wrap { position: relative; }
+  .input-wrap input { padding-right: 52px; text-align: right; }
+  .input-wrap.wide-unit input { padding-right: 70px; }
+  .input-unit { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; font-weight: 700; color: var(--ink-mute); pointer-events: none; }
+  .input-hint { font-size: 13px; color: var(--ink-mute); margin-top: 6px; font-weight: 600; min-height: 18px; }
+  .input-hint b { color: var(--accent); font-weight: 800; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .seg { display: inline-flex; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 4px; gap: 4px; width: 100%; }
+  .seg button { flex: 1; border: none; background: transparent; padding: 10px 12px; border-radius: 9px; font-family: inherit; font-size: 15px; font-weight: 800; color: var(--ink-mute); cursor: pointer; }
+  .seg button.on { background: var(--dark-warm); color: var(--white); }
+  .seg.sm button { font-size: 13.5px; padding: 8px 8px; }
+  .sub-title { font-size: 17px; font-weight: 900; margin: 26px 0 10px; letter-spacing: -.3px; }
+  .sub-title small { font-size: 13px; font-weight: 700; color: var(--ink-mute); margin-left: 6px; }
+
+  details.adv { margin-top: 22px; border-top: 1px dashed var(--border); padding-top: 18px; }
+  details.adv > summary { cursor: pointer; font-size: 15px; font-weight: 800; color: var(--ink-soft); list-style: none; display: flex; align-items: center; gap: 8px; }
+  details.adv > summary::-webkit-details-marker { display: none; }
+  details.adv > summary::before { content: '+'; display: inline-flex; width: 22px; height: 22px; border-radius: 6px; background: var(--bg-alt); align-items: center; justify-content: center; font-weight: 900; color: var(--accent); flex-shrink: 0; }
+  details.adv[open] > summary::before { content: '−'; }
+  details.adv > summary small { font-size: 12.5px; color: var(--ink-mute); font-weight: 600; }
+  .adv-body { margin-top: 18px; }
+  .ev-row { display: grid; grid-template-columns: 1.4fr 1fr 1.2fr; gap: 10px; margin-bottom: 10px; align-items: center; }
+  .ev-row input[type=text].ev-name { text-align: left; font-size: 15px; }
+  .ev-head { display: grid; grid-template-columns: 1.4fr 1fr 1.2fr; gap: 10px; font-size: 12px; font-weight: 800; color: var(--ink-mute); margin-bottom: 6px; }
+
+  .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+  .stat-card.accent { background: var(--dark-warm); color: var(--white); border-color: var(--dark-warm); }
+  .stat-card.accent .stat-label { color: var(--accent-soft); }
+  .stat-card.accent .stat-sub { color: #D9D2C5; }
+  .stat-label { font-size: 13px; font-weight: 800; color: var(--ink-mute); margin-bottom: 8px; }
+  .stat-value { font-size: 26px; font-weight: 900; letter-spacing: -1px; line-height: 1.15; }
+  .stat-sub { font-size: 13px; color: var(--ink-mute); margin-top: 8px; font-weight: 600; line-height: 1.45; }
+  .progress { height: 8px; background: var(--bg-alt); border-radius: 999px; overflow: hidden; margin-top: 10px; }
+  .progress i { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+
+  .alerts { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+  .alert { display: flex; gap: 10px; align-items: flex-start; padding: 12px 16px; border-radius: 12px; font-size: 14px; font-weight: 600; line-height: 1.5; }
+  .alert .ic { font-weight: 900; flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; margin-top: 1px; color: var(--white); }
+  .alert.ok { background: var(--green-soft); color: #2F3D2F; } .alert.ok .ic { background: var(--green); }
+  .alert.warn { background: #FBE3D6; color: #7A2E14; } .alert.warn .ic { background: var(--accent); }
+  .alert.info { background: var(--bg-alt); color: var(--ink-soft); } .alert.info .ic { background: var(--brown); }
+  .alert b { font-weight: 900; }
+
+  .chart-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .chart-title { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; }
+  .chart-subtitle { font-size: 13px; color: var(--ink-mute); font-weight: 600; margin-top: 2px; }
+  .chart-container { position: relative; height: 340px; width: 100%; }
+  .real-seg { width: auto; }
+  .real-seg button { padding: 7px 12px; font-size: 13px; white-space: nowrap; }
+
+  .table-wrap { overflow-x: auto; margin-top: 16px; border-radius: 12px; -webkit-overflow-scrolling: touch; }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .data-table th { background: var(--bg-alt); padding: 12px 10px; text-align: right; font-weight: 800; color: var(--ink-soft); font-size: 13px; border-bottom: 1.5px solid var(--border); white-space: nowrap; }
+  .data-table th:first-child, .data-table td:first-child { text-align: left; }
+  .data-table td { padding: 11px 10px; text-align: right; border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
+  .data-table tbody tr:hover { background: var(--bg-alt); }
+  .data-table tr.mine td { background: var(--accent-soft); font-weight: 800; }
+  .data-table tr.free td { background: #EEF2EB; }
+  .badge { display: inline-block; font-size: 11.5px; font-weight: 900; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; }
+  .badge.mine { background: var(--accent); color: var(--white); }
+  .badge.free { background: var(--green); color: var(--white); }
+  .data-table td.bad { color: var(--blue); font-weight: 800; }
+  .data-table td.ok { color: var(--green); font-weight: 800; }
+  .yr-table { min-width: 860px; font-size: 13px; }
+  .yr-table tr.short td { background: #E9EFF5; }
+  .yr-table tr.ret td { border-top: 2px solid var(--dark-warm); }
+  .yr-table td.ev { text-align: left; font-size: 12px; color: var(--ink-soft); }
+  .yr-table td.neg { color: var(--blue); }
+  details.fold > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  details.fold > summary::-webkit-details-marker { display: none; }
+  .fold-btn { font-size: 13px; font-weight: 800; color: var(--accent); border: 1.5px solid var(--accent); border-radius: 999px; padding: 6px 14px; white-space: nowrap; }
+  details.fold[open] .fold-btn .open-txt { display: none; }
+  details.fold:not([open]) .fold-btn .close-txt { display: none; }
+  .dl-btn { font-family: inherit; font-size: 13px; font-weight: 700; padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--accent); background: var(--white); color: var(--accent); cursor: pointer; margin-top: 12px; }
+  .dl-btn:hover { background: var(--accent); color: #fff; }
+
+  .insight-box { background: var(--dark-warm); color: var(--white); border-radius: 20px; padding: 36px; margin-bottom: 24px; }
+  .insight-label { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .insight-label-text { font-size: 12px; font-weight: 800; letter-spacing: 1.5px; color: var(--accent-soft); }
+  .insight-title { font-size: 26px; font-weight: 900; margin-bottom: 16px; letter-spacing: -0.6px; line-height: 1.35; }
+  .insight-title em { font-style: normal; color: #FFB48F; }
+  .insight-desc { font-size: 15px; line-height: 1.8; color: #D9D2C5; font-weight: 500; }
+  .insight-desc strong { color: var(--white); }
+  .insight-desc ul { margin: 10px 0 0 0; padding-left: 0; list-style: none; }
+  .insight-desc li { padding-left: 18px; position: relative; margin-bottom: 6px; }
+  .insight-desc li::before { content: ''; position: absolute; left: 4px; top: 11px; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+  .insight-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .insight-tools .cta-link { cursor: pointer; font-family: inherit; }
+  .insight-cta { margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.12); display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .insight-cta-text { font-size: 14px; color: #D9D2C5; font-weight: 600; margin-right: 8px; }
+  .cta-link { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; text-decoration: none; letter-spacing: -0.2px; }
+  .cta-link.primary { background: var(--accent); color: var(--white); border: none; }
+  .cta-link.secondary { background: rgba(255,255,255,0.08); color: var(--white); border: 1px solid rgba(255,255,255,0.15); }
+  footer { font-size: 12px; color: var(--ink-mute); font-weight: 600; line-height: 1.8; padding: 8px 4px 24px; }
+
+  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .method-box { background: var(--bg); border-radius: 14px; padding: 16px 18px; }
+  .method-t { font-size: 14px; font-weight: 900; color: var(--dark-warm); margin-bottom: 8px; }
+  .method-list { list-style: none; margin: 0; padding: 0; }
+  .method-list li { position: relative; padding-left: 14px; font-size: 13.5px; font-weight: 600; color: var(--ink-soft); line-height: 1.7; margin-bottom: 6px; word-break: keep-all; }
+  .method-list li::before { content: ''; position: absolute; left: 2px; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+  .method-list li b { color: var(--ink); font-weight: 800; }
+
+
+  .note { font-size: 12.5px; font-weight: 600; color: var(--ink-mute); line-height: 1.65; margin-top: 12px; }
+  .note a { color: var(--accent); font-weight: 800; }
+  .note b { color: var(--ink-soft); }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+  .tgl { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 9px 14px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--white); font-size: 14px; font-weight: 800; color: var(--ink-soft); }
+  .tgl input { width: 18px; height: 18px; accent-color: var(--accent); }
+  .tgl:has(input:checked) { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .tool-btn { display: inline-flex; align-items: center; padding: 9px 14px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--white); font-family: inherit; font-size: 14px; font-weight: 800; color: var(--ink-soft); cursor: pointer; text-decoration: none; }
+  .tool-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .tool-btn.ghost { margin-left: auto; }
+  .verdict { background: var(--dark-warm); color: var(--white); border-radius: 18px; padding: 24px 26px; margin-bottom: 18px; }
+  .v-k { font-size: 13px; font-weight: 800; color: #D9C9BA; }
+  .v-main { font-size: 32px; font-weight: 900; letter-spacing: -1px; margin: 6px 0 8px; line-height: 1.25; }
+  .v-main b { color: #FFB48F; } .v-main.ok b { color: #BFE3BF; }
+  .v-sub { font-size: 15px; font-weight: 600; color: #E6DDD0; line-height: 1.6; }
+  .v-sub b { color: var(--white); }
+  .levers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .lever { border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; background: var(--white); }
+  .lv-t { font-size: 14px; font-weight: 900; } .lv-s { font-size: 12.5px; font-weight: 600; color: var(--ink-mute); margin-top: 2px; }
+  .lv-d { margin-top: 8px; font-size: 18px; font-weight: 900; } .lv-d em { font-style: normal; } .lv-d em.ok { color: var(--green); } .lv-d em.bad { color: var(--blue); } .lv-d small { display: block; font-size: 12px; font-weight: 700; color: var(--ink-mute); }
+  .adj-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; background: var(--bg); border-radius: 14px; padding: 14px 16px; }
+  .adj-txt b { display: block; font-size: 14.5px; font-weight: 900; } .adj-txt span { display: block; font-size: 12.5px; font-weight: 600; color: var(--ink-mute); line-height: 1.55; margin-top: 2px; }
+  .adj-seg { max-width: 320px; flex-shrink: 0; }
+  .adj-out { margin-top: 8px; font-size: 13.5px; font-weight: 700; color: var(--ink-soft); } .adj-out b { color: var(--accent); font-weight: 900; }
+  .sc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .sc { border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; background: var(--white); }
+  .sc.on { border-color: var(--accent); background: #FDF3EC; }
+  .sc-head { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+  .sc-head input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--accent); flex-shrink: 0; }
+  .sc-head b { font-size: 15.5px; font-weight: 900; display: block; }
+  .sc-head small { display: block; font-size: 12.5px; color: var(--ink-mute); font-weight: 600; margin-top: 2px; line-height: 1.5; }
+  .sc-body { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .sc-body.two { grid-template-columns: 1fr 1fr; }
+  .sc-body .label { font-size: 12px; margin-bottom: 4px; }
+  .sc-body input { font-size: 15px; padding: 9px 12px; }
+  .sc:not(.on) .sc-body { opacity: .5; }
+
+  @media (max-width: 960px) { .levers { grid-template-columns: 1fr 1fr; } .grid-4 { grid-template-columns: 1fr 1fr; } .sc-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 768px) {
+    body { padding: 16px 12px; }
+    header { margin-bottom: 28px; }
+    .base-date { font-size: 11px; padding: 5px 10px; }
+    .card { padding: 20px 16px; margin-bottom: 20px; border-radius: 16px; }
+    .hero { margin-bottom: 28px; }
+    .hero-title { font-size: 32px; letter-spacing: -1.2px; line-height: 1.2; }
+    .hero-desc { font-size: 15px; }
+    .pc-br { display: none; }
+    .top-cta { flex-direction: column; align-items: stretch; padding: 16px; }
+    .top-cta-links { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .top-cta-link { justify-content: center; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 14px; }
+    .grid-4 { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .step-title { font-size: 19px; }
+    .stat-card { padding: 16px; border-radius: 14px; }
+    .stat-value { font-size: 22px; }
+    .chart-container { height: 290px; }
+    .insight-box { padding: 24px 18px; border-radius: 16px; }
+    .insight-title { font-size: 20px; }
+    .insight-cta { flex-direction: column; align-items: stretch; }
+    .cta-link { justify-content: center; }
+    .table-wrap { margin: 16px -16px 0; padding: 0 16px; }
+    .data-table { font-size: 13px; }
+    .yr-table th:first-child, .yr-table td:first-child { position: sticky; left: 0; z-index: 1; background: var(--white); box-shadow: 1px 0 0 var(--border); }
+    .yr-table th:first-child { background: var(--bg-alt); }
+    .v-main { font-size: 24px; } .verdict { padding: 20px 18px; }
+    .tool-btn.ghost { margin-left: 0; }
+    .adj-row { flex-direction: column; align-items: stretch; } .adj-seg { max-width: none; }
+    .method-grid { grid-template-columns: 1fr; }
+    .ev-row, .ev-head { grid-template-columns: 1.2fr .9fr 1.1fr; gap: 6px; }
+    .ev-row input { font-size: 14px; padding: 9px 8px; }
+    .ev-row .input-wrap input { padding-right: 34px; }
+    .ev-row .input-unit { right: 8px; font-size: 12px; }
+    .sc-body, .sc-body.two { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 420px) { .levers { grid-template-columns: 1fr; } .grid-4 { grid-template-columns: 1fr; } .hero-title { font-size: 28px; } }
+  .cmp-table td.tot { font-weight: 900; }
+  .cmp-table td.save { color: var(--green); font-weight: 900; }
+  .cmp-table td.worse { color: var(--blue, #2E5E8A); font-weight: 800; }
+  .cmp-table tr.pick td { background: #FFF6EE; }
+  .cmp-table td.kind { text-align: left; font-size: 12.5px; color: var(--ink-soft); white-space: normal; }
+  .fin-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
+  .fin-grid > div { background: var(--bg); border-radius: 14px; padding: 14px 16px; font-size: 14px; font-weight: 700; color: var(--ink-soft); line-height: 1.7; }
+  .fin-grid b { color: var(--ink); }
+  .fin-grid .over { color: #b3261e; }
+  .fin-grid .ok { color: var(--green); }
+  .eval-list { margin: 6px 0 0; padding-left: 20px; font-size: 14px; font-weight: 600; color: var(--ink-soft); line-height: 1.75; }
+  .eval-list b { color: var(--ink); }
+  @media (max-width: 768px) { .fin-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a href="https://ttokjaetv.github.io/" class="hub-back">← 똑재TV 계산기 모음</a>
+  <header>
+    <div class="logo">
+      <div class="logo-icon">똑</div>
+      <div>
+        <div class="logo-name">똑재TV</div>
+        <div class="logo-sub">SPOUSE GIFT CALCULATOR</div>
+      </div>
+    </div>
+    <span class="base-date">2026-10-24 세법 기준</span>
+  </header>
+
+  <div class="hero">
+    <span class="tag"><span class="dot"></span>배우자 증여 절세 계산기</span>
+    <h1 class="hero-title">오른 해외주식, 배우자에게 주고 팔면<br><span class="underline-mark">양도세가 얼마나</span> 줄어들까?</h1>
+    <p class="hero-desc">
+      배우자에게는 10년 동안 <span data-rule="GIFT.deductionSpouse/1e8">6</span>억원까지 증여세 없이 줄 수 있고, 증여받은 주식은 <b>증여할 때 값이 새 취득가</b>가 돼요.<br class="pc-br">
+      내가 그대로 팔 때와 <b>배우자에게 증여한 뒤 팔 때</b>의 증여세·양도세를 비교하고, 1년 안에 팔면 생기는 <b>이월과세</b>까지 계산해 드립니다.
+    </p>
+  </div>
+
+  <div class="top-cta">
+    <div class="top-cta-text">💡 <strong>해외주식 절세</strong>가 더 궁금하신가요? 똑재TV에서 매주 풀어드립니다.</div>
+    <div class="top-cta-links">
+      <a href="https://www.youtube.com/@ttok_jae" target="_blank" rel="noopener" class="top-cta-link primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        똑재TV 구독하기
+      </a>
+      <a href="https://cafe.naver.com/ttokjae" target="_blank" rel="noopener" class="top-cta-link"><span class="naver-mark">N</span>평생 ETF 투자 카페</a>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button type="button" class="tool-btn" id="share-btn">설정 링크 복사</button>
+    <button type="button" class="tool-btn" id="reset-btn">처음 값으로</button>
+    <a href="#result" class="tool-btn ghost">결과 보기 ↓</a>
+  </div>
+
+  <!-- STEP 01 -->
+  <div class="card">
+    <div class="step-label"><div class="step-line"></div><span class="step-text">STEP 01</span></div>
+    <div class="step-title">증여할 해외주식</div>
+    <div class="step-desc">금액은 모두 <b>원화</b>로 넣어 주세요(달러 × 그날 환율). 미국 직투처럼 <b>해외 증권시장에서 산 주식·ETF</b> 기준이에요. 국내상장 해외 ETF는 매매차익이 배당소득이라 이 계산과 달라요.</div>
+    <div class="grid-3">
+      <div><label class="label" for="cost">내가 산 금액 (취득가액)</label><div class="input-wrap"><input type="text" inputmode="numeric" id="cost" data-man value="10,000"><span class="input-unit">만원</span></div><div class="input-hint">증여할 수량만큼의 매수 금액 합계</div></div>
+      <div><label class="label" for="value">증여 평가액</label><div class="input-wrap"><input type="text" inputmode="numeric" id="value" data-man value="30,000"><span class="input-unit">만원</span></div><div class="input-hint"><a href="#eval" style="color:var(--accent);font-weight:800">평가액 정하는 법 ↓</a> · 배우자의 새 취득가가 돼요</div></div>
+      <div><label class="label" for="sale">배우자가 팔 금액</label><div class="input-wrap"><input type="text" inputmode="numeric" id="sale" data-man value="30,000"><span class="input-unit">만원</span></div><div class="input-hint" id="sale-hint"></div></div>
+    </div>
+  </div>
+
+  <!-- STEP 02 -->
+  <div class="card">
+    <div class="step-label"><div class="step-line"></div><span class="step-text">STEP 02</span></div>
+    <div class="step-title">증여 이력과 파는 시점</div>
+    <div class="step-desc">배우자 공제 <span data-rule="GIFT.deductionSpouse/1e8">6</span>억원은 <b><span data-rule="GIFT.periodYears">10</span>년 동안 합쳐서</b>예요. 그 안에 배우자에게 준 현금·부동산·주식이 있으면 함께 넣어 주세요.</div>
+    <div class="grid-2">
+      <div><label class="label" for="prior">최근 <span data-rule="GIFT.periodYears">10</span>년 안에 배우자에게 이미 준 금액</label><div class="input-wrap"><input type="text" inputmode="numeric" id="prior" data-man value="0"><span class="input-unit">만원</span></div><div class="input-hint" id="prior-hint"></div></div>
+      <div><label class="label">배우자가 언제 팔까요?</label><div class="seg sm" id="when-seg"><button type="button" data-v="after" class="on">증여 1년 지나서</button><button type="button" data-v="within">1년 안에</button></div><div class="input-hint">1년 안에 팔면 이월과세(내가 산 값으로 다시 계산)</div></div>
+    </div>
+    <details class="adv">
+      <summary>올해 다른 해외주식 손익이 있나요? <small>양도세 기본공제 <span data-rule="OVERSEAS_STOCK.basicDeduction/1e4">250</span>만원은 사람마다 1년에 한 번</small></summary>
+      <div class="adv-body grid-2">
+        <div><label class="label" for="other-me">나 — 올해 이미 판 해외주식 손익</label><div class="input-wrap"><input type="text" inputmode="numeric" id="other-me" data-man data-neg value="0"><span class="input-unit">만원</span></div><div class="input-hint">손실이면 앞에 − (예: −500)</div></div>
+        <div><label class="label" for="other-sp">배우자 — 올해 이미 판 해외주식 손익</label><div class="input-wrap"><input type="text" inputmode="numeric" id="other-sp" data-man data-neg value="0"><span class="input-unit">만원</span></div></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- RESULT -->
+  <div class="card" id="result">
+    <div class="step-label"><div class="step-line"></div><span class="step-text">RESULT</span></div>
+    <div class="step-title">결과</div>
+    <div class="verdict" id="verdict"></div>
+    <div class="grid-4">
+      <div class="stat-card"><div class="stat-label">내가 그대로 팔면</div><div class="stat-value" id="s-a">-</div><div class="stat-sub" id="s-a-sub"></div></div>
+      <div class="stat-card accent"><div class="stat-label" id="s-pick-l">배우자에게 주고 팔면</div><div class="stat-value" id="s-pick">-</div><div class="stat-sub" id="s-pick-sub"></div></div>
+      <div class="stat-card"><div class="stat-label">줄어드는 세금</div><div class="stat-value" id="s-save">-</div><div class="stat-sub" id="s-save-sub"></div></div>
+      <div class="stat-card"><div class="stat-label">배우자가 낼 증여세</div><div class="stat-value" id="s-gift">-</div><div class="stat-sub" id="s-gift-sub"></div></div>
+    </div>
+    <div class="alerts" id="alerts"></div>
+
+    <div class="sub-title">세 가지 방법 비교 <small>양도세는 지방소득세 포함</small></div>
+    <div class="table-wrap"><table class="data-table cmp-table" id="cmp-table"><thead><tr><th>방법</th><th>양도차익</th><th>양도세</th><th>증여세</th><th>세금 합계</th><th>그대로 팔 때보다</th><th>비고</th></tr></thead><tbody></tbody></table></div>
+  </div>
+
+  <div class="card">
+    <div class="chart-head">
+      <div><div class="chart-title">방법별 세금</div><div class="chart-subtitle">증여세 + 양도세(지방소득세 포함)</div></div>
+    </div>
+    <div class="chart-container" style="height:260px"><canvas id="cmp-chart"></canvas></div>
+  </div>
+
+  <!-- 배당 나누기 -->
+  <div class="card">
+    <div class="step-label"><div class="step-line"></div><span class="step-text">PLUS</span></div>
+    <div class="step-title">배당도 배우자 몫으로 나누기</div>
+    <div class="step-desc">증여한 주식에서 나오는 배당은 <b>배우자의 금융소득</b>이 돼요. 이자·배당이 1년에 <span data-rule="FIN_INCOME.threshold/1e4">2,000</span>만원을 넘으면 종합과세가 되는데, 부부로 나누면 둘 다 기준 아래로 내려갈 수 있어요. (팔지 않고 계속 들고 갈 때)</div>
+    <div class="grid-3">
+      <div><label class="label" for="my-fin">내 올해 이자·배당 (세전)</label><div class="input-wrap"><input type="text" inputmode="numeric" id="my-fin" data-man value="2,500"><span class="input-unit">만원</span></div></div>
+      <div><label class="label" for="div">그중 증여할 주식의 배당</label><div class="input-wrap"><input type="text" inputmode="numeric" id="div" data-man value="800"><span class="input-unit">만원</span></div></div>
+      <div><label class="label" for="sp-fin">배우자 올해 이자·배당 (세전)</label><div class="input-wrap"><input type="text" inputmode="numeric" id="sp-fin" data-man value="300"><span class="input-unit">만원</span></div></div>
+    </div>
+    <div class="fin-grid" id="fin-out"></div>
+    <p class="note">종합과세가 되면 세금·건강보험료(건보료)가 얼마나 늘어나는지는 <a href="https://ttokjaetv.github.io/fin-income-tax/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:800">금융소득종합과세·건보료 계산기 →</a>에서 볼 수 있어요.</p>
+  </div>
+
+  <!-- 평가액 정하는 법 -->
+  <div class="card" id="eval">
+    <div class="step-label"><div class="step-line"></div><span class="step-text">HOW TO VALUE</span></div>
+    <div class="step-title">증여 평가액은 이렇게 정해요</div>
+    <div class="step-desc">증여 평가액이 곧 <b>배우자의 취득가액</b>이라 양도세를 크게 좌우해요(소득세법 시행령 제163조⑨). 법 조문은 '증여일 현재 시가'(상속세 및 증여세법 제60조)이고, 해외 상장 주식을 어떻게 시가로 볼지는 실무에서 아래처럼 안내돼요.</div>
+    <ul class="eval-list">
+      <li><b>해외 개별 주식</b> — 증여일 <b>전후 2개월씩(총 4개월) 종가 평균</b> × 수량 × <b>증여일 기준환율</b>. 증여 뒤 2개월이 지나야 값이 정해져요.</li>
+      <li><b>해외 상장 ETF</b> — 증여일 무렵 <b>종가</b>로 평가한다는 안내가 많아요.</li>
+      <li>국세청·기획재정부 공식 해석 원문은 아직 확인하지 못했어요. 신고 전에 홈택스 상담(126)이나 세무사와 꼭 확인하세요.</li>
+      <li>그래서 이 계산기는 평가액을 <b>직접 넣게</b> 했어요. 주가가 오르는 중이면 4개월 평균이 증여일 값보다 낮을 수 있고, 그 차이만큼 배우자가 팔 때 양도차익이 생겨요.</li>
+    </ul>
+    <div class="sub-title" style="margin-top:20px">신고는 이렇게</div>
+    <ul class="eval-list">
+      <li>증여세는 받은 배우자가 <b>증여받은 달 말일부터 3개월 안</b>에 신고해요. 세금이 0원이어도 신고해 두면 증여일·평가액이 기록으로 남아, 배우자가 팔 때 취득가액 근거가 돼요.</li>
+      <li>홈택스 신고 화면은 <a href="https://ttokjaetv.github.io/child-gift/#filing" target="_blank" rel="noopener" style="color:var(--accent);font-weight:800">자녀 증여 계산기의 신고 안내 →</a>와 같은 메뉴예요. 현금이 아니라 주식이라 '현금만 받았나요?'에는 '아니오'를 고르고, 종목·수량·평가액을 넣어요.</li>
+      <li>주식은 증권사에서 <b>배우자 계좌로 대체(이체) 출고</b>해서 넘겨요. 판 돈은 배우자 계좌에 두고 배우자 돈으로 쓰세요.</li>
+    </ul>
+  </div>
+
+  <div class="insight-box">
+    <div class="insight-label">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F4D5C4" stroke-width="2.5" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>
+      <span class="insight-label-text">KEY INSIGHT</span>
+    </div>
+    <h3 class="insight-title" id="ins-title">-</h3>
+    <div class="insight-desc" id="ins-desc"></div>
+    <div class="insight-tools">
+      <button type="button" class="cta-link secondary" id="copy-btn">결과 글로 복사</button>
+      <a class="cta-link secondary" href="https://ttokjaetv.github.io/overseas-stock-tax/" target="_blank" rel="noopener">해외주식 양도세만 따로 계산 →</a>
+      <a class="cta-link secondary" href="https://ttokjaetv.github.io/yearend-tax/" target="_blank" rel="noopener">연말 절세 체크리스트 →</a>
+    </div>
+    <div class="insight-cta">
+      <div class="insight-cta-text">📊 해외주식 절세 전략이 더 궁금하다면?</div>
+      <a href="https://www.youtube.com/@ttok_jae" target="_blank" rel="noopener" class="cta-link primary">똑재TV 구독하기</a>
+      <a href="https://cafe.naver.com/ttokjae" target="_blank" rel="noopener" class="cta-link secondary"><span class="naver-mark">N</span>평생 ETF 투자 카페 가입</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="step-label"><div class="step-line"></div><span class="step-text">HOW IT WORKS</span></div>
+    <div class="step-title">계산 방법과 가정</div>
+    <div class="method-grid" style="margin-top:14px">
+      <div class="method-box">
+        <div class="method-t">이렇게 계산해요</div>
+        <ul class="method-list">
+          <li><b>그대로 팔면</b>: (팔 금액 − 내가 산 금액)에서 기본공제 <span data-rule="OVERSEAS_STOCK.basicDeduction/1e4">250</span>만원을 빼고 <span data-rule="OVERSEAS_STOCK.rate*100">22</span>%(양도소득세 <span data-rule="OVERSEAS_STOCK.rateNational*100">20</span>% + 지방소득세 <span data-rule="OVERSEAS_STOCK.rateLocal*100">2</span>%). 올해 다른 손익이 있으면 합쳐서 늘어나는 세금만 셉니다.</li>
+          <li><b>증여 후 1년 지나 팔면</b>: 배우자의 취득가액 = 증여 평가액(소득세법 시행령 제163조⑨). 배우자도 기본공제를 따로 받아요.</li>
+          <li><b>1년 안에 팔면</b>: 이월과세(소득세법 제97조의2, 주식은 2025-01-01 이후 증여분부터) — 취득가액을 <b>내가 산 금액</b>으로 되돌리고, 증여세 상당액(산출세액 × 이 주식 ÷ 10년 합산 증여액)만 비용으로 빼 줘요. 이렇게 계산한 세금이 오히려 적으면 적용하지 않아요(같은 조 ②3호). 증여세는 그대로 내요.</li>
+          <li><b>증여세</b>: 10년 합산(상속세 및 증여세법 제47조②)에서 배우자 공제 <span data-rule="GIFT.deductionSpouse/1e8">6</span>억원(제53조)을 빼고 10~50% 누진(제56조), 과세표준 <span data-rule="GIFT.minTaxBase/1e4">50</span>만원 미만은 0원(제55조②), 이전 증여분 산출세액은 빼고(제58조), 기한 안 신고 <span data-rule="GIFT.filingCreditRate*100">3</span>% 공제(제69조).</li>
+        </ul>
+      </div>
+      <div class="method-box">
+        <div class="method-t">계산에 넣지 않은 것</div>
+        <ul class="method-list">
+          <li>매매 수수료·환전 비용, 외국에서 낸 세금(외국납부세액공제).</li>
+          <li>증여 평가액을 정하는 일(직접 입력) — 개별 주식은 증여일 전후 4개월 평균이라 증여일 값과 달라질 수 있어요.</li>
+          <li>판 돈을 다시 증여한 사람이 가져가는 경우 — 실질적으로 증여자가 판 것으로 보아 과세될 수 있어요.</li>
+          <li>상속이 생기면 그 전 10년 안의 증여를 상속재산에 더하는 규정(상속세 및 증여세법 제13조), 국내시장 복귀계좌(RIA) 공제.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    ※ 이 계산기는 소득세법(2026-01-01 시행본)과 상속세 및 증여세법을 2026-10-24 국가법령정보센터 원문으로 확인해 만든 시뮬레이션입니다. 해외 상장 주식의 증여 평가 방법은 실무 안내를 따랐고 공식 해석은 확인하지 못했으니, 실제 증여·신고 전에는 홈택스 상담이나 세무 전문가와 확인하세요. 특정 상품의 매수·매도 권유가 아닙니다.<br>
+    2026-10-24 세법 기준
+  </footer>
+</div>
+
+<!-- 공용 제도 상수 (증여세 GIFT는 v2026.3부터) -->
+<script src="https://ttokjaetv.github.io/rules/v2026.3/rules.js"></script>
+<script src="https://ttokjaetv.github.io/rules/fill-v1.js"></script>
+<script>
+if (!window.TTOKJAE_RULES || !TTOKJAE_RULES.GIFT || !TTOKJAE_RULES.OVERSEAS_STOCK) {
+  var TJR_MSG = '기준값 파일(rules.js)을 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 새로고침해 주세요.';
+  var tjrShow = function () { document.body.insertAdjacentHTML('afterbegin', '<div role="alert" style="background:#fdecea;color:#b3261e;padding:12px 16px;text-align:center;font-weight:600">' + TJR_MSG + '</div>'); };
+  document.body ? tjrShow() : document.addEventListener('DOMContentLoaded', tjrShow);
+  throw new Error(TJR_MSG);
+}
+const TR = TTOKJAE_RULES;
+/* 배우자 증여 절세 엔진 — 해외주식을 배우자에게 증여한 뒤 배우자가 팔 때. 금액 원.
+ * 제도 숫자는 rules.js(R.GIFT·R.OVERSEAS_STOCK·R.FIN_INCOME, v2026.3 이상)에서 읽는다.
+ *
+ * 세 가지를 비교한다 (양도세는 해당 연도의 다른 해외주식 손익과 합쳐 늘어나는 몫만 본다)
+ *   A 그대로 내가 판다: 양도차익 = 매도금액 − 내 취득가액
+ *   B 배우자에게 증여 → 1년 지나 배우자가 판다: 취득가액 = 증여 평가액(소득세법 시행령 제163조⑨)
+ *   C 배우자에게 증여 → 1년 안에 배우자가 판다: 이월과세(소득세법 제97조의2, 주식은 2025-01-01 이후 증여분)
+ *     취득가액 = 내 취득가액, 증여세 상당액은 필요경비(시행령 제163조의2②: 산출세액 × 이 자산 ÷ 과세가액, 한도 = 차익)
+ *     이월과세로 계산한 세금이 적용 안 한 세금보다 적으면 적용하지 않는다(제97조의2②3호) → 둘 중 큰 쪽
+ *   증여세(상속세 및 증여세법): 배우자 공제 10년 합계(제53조), 10년 합산(제47조②)·이전 산출세액 공제(제58조),
+ *     과세최저한(제55조②), 신고세액공제(제69조②). 이월과세가 적용돼도 증여세는 그대로 낸다.
+ */
+function sgGiftCalc(base, R) {
+  if (!(base > 0)) return 0;
+  for (const [lim, rate, ded] of R.GIFT.brackets) if (base <= lim) return Math.floor(base * rate - ded);
+  return 0;
+}
+function sgGiftBase(agg, R) {
+  const b = Math.max(0, agg - R.GIFT.deductionSpouse);
+  return b < R.GIFT.minTaxBase ? 0 : b;
+}
+
+/* 이번 증여 value (10년 안 이전 증여 prior) → 증여세 */
+function sgGiftTax(value, prior, R) {
+  const agg = value + prior;
+  const base = sgGiftBase(agg, R), calc = sgGiftCalc(base, R);
+  const prev = Math.min(calc, sgGiftCalc(sgGiftBase(prior, R), R));   // 이전 증여를 따로 신고했을 때의 산출세액
+  const own = calc - prev, credit = Math.floor(own * R.GIFT.filingCreditRate);
+  return { agg, ded: Math.min(R.GIFT.deductionSpouse, agg), base, calc, prev, own, credit, tax: own - credit,
+    room: Math.max(0, R.GIFT.deductionSpouse - prior) };
+}
+
+/* 해외주식 양도세 — 연간 양도차익 합계 gain에 대해 */
+function sgOvTax(gain, R) {
+  const O = R.OVERSEAS_STOCK, base = Math.max(0, gain - O.basicDeduction);
+  return Math.floor(base * O.rateNational) + Math.floor(base * O.rateLocal);
+}
+/* 다른 손익 other가 있을 때 이 거래 gain이 늘리는 세금 */
+const sgOvAdd = (gain, other, R) => sgOvTax(gain + other, R) - sgOvTax(other, R);
+
+/* p = { cost, value, sale, prior, otherMe, otherSp } */
+function sgCalc(p, R) {
+  const g = sgGiftTax(p.value, p.prior, R);
+  const gainA = p.sale - p.cost, taxA = sgOvAdd(gainA, p.otherMe, R);
+  const gainB = p.sale - p.value, taxB = sgOvAdd(gainB, p.otherSp, R);
+  // 이월과세
+  const giftExpRaw = g.agg > 0 ? Math.floor(g.calc * p.value / g.agg) : 0;
+  const giftExp = Math.max(0, Math.min(giftExpRaw, p.sale - p.cost));
+  const gainC = p.sale - p.cost - giftExp, taxC1 = sgOvAdd(gainC, p.otherSp, R);
+  const carry = taxC1 >= taxB;                       // 제97조의2②3호
+  const taxC = carry ? taxC1 : taxB;
+  const A = { gain: gainA, cgt: taxA, gift: 0, total: taxA };
+  const B = { gain: gainB, cgt: taxB, gift: g.tax, total: g.tax + taxB };
+  const C = { gain: carry ? gainC : gainB, cgt: taxC, gift: g.tax, total: g.tax + taxC, carry, giftExp };
+  return { gift: g, A, B, C, saveB: A.total - B.total, saveC: A.total - C.total };
+}
+
+/* 배당 나누기: 증여한 주식의 연 배당 div가 내 금융소득에서 배우자 금융소득으로 옮겨감 */
+function sgFin(o, R) {
+  const th = R.FIN_INCOME.threshold;
+  const meBefore = Math.max(0, o.myFin), spBefore = Math.max(0, o.spFin), div = Math.max(0, Math.min(o.div, meBefore));
+  const meAfter = meBefore - div, spAfter = spBefore + div;
+  return { th, div, meBefore, meAfter, spBefore, spAfter,
+    overBefore: [meBefore > th, spBefore > th], overAfter: [meAfter > th, spAfter > th] };
+}
+
+
+
+const $ = id => document.getElementById(id);
+const STORE_KEY = 'tj-spouse-gift-v1';
+const ST = { when: 'after' };
+const FIELDS = ['cost', 'value', 'sale', 'prior', 'other-me', 'other-sp', 'my-fin', 'div', 'sp-fin'];
+const DEFAULTS = {}; FIELDS.forEach(id => { DEFAULTS[id] = $(id).value; });
+
+function num(id) {
+  const el = $(id); if (!el) return 0;
+  const v = parseFloat(String(el.value).replace(/[−–]/g, '-').replace(/[^0-9.\-]/g, ''));
+  if (isNaN(v)) return 0;
+  return el.hasAttribute('data-man') ? v * 10000 : v;
+}
+function fmtMan(n) {
+  const neg = n < 0; n = Math.abs(Math.round(n / 10000));
+  if (n === 0) return '0원';
+  const eok = Math.floor(n / 10000), man = n % 10000;
+  const s = eok ? `${eok.toLocaleString()}억${man ? ' ' + man.toLocaleString() + '만원' : '원'}` : `${man.toLocaleString()}만원`;
+  return (neg ? '−' : '') + s;
+}
+function fmtWon(n) {
+  const neg = n < 0; n = Math.round(Math.abs(n));
+  if (n === 0) return '0원';
+  const eok = Math.floor(n / 1e8), man = Math.floor(n % 1e8 / 1e4), won = n % 1e4;
+  const p = [];
+  if (eok) p.push(eok.toLocaleString() + '억');
+  if (man) p.push(man.toLocaleString() + '만');
+  if (won) p.push(won.toLocaleString());
+  return (neg ? '−' : '') + p.join(' ') + '원';
+}
+
+function readParams() {
+  return { cost: Math.max(0, num('cost')), value: Math.max(0, num('value')), sale: Math.max(0, num('sale')), prior: Math.max(0, num('prior')),
+    otherMe: num('other-me'), otherSp: num('other-sp'), when: ST.when,
+    myFin: Math.max(0, num('my-fin')), div: Math.max(0, num('div')), spFin: Math.max(0, num('sp-fin')) };
+}
+
+let chart = null, last = null;
+function render() {
+  const p = readParams();
+  const r = sgCalc(p, TR), f = sgFin(p, TR);
+  const pick = p.when === 'within' ? r.C : r.B, save = r.A.total - pick.total;
+  last = { p, r, f, pick, save };
+  const g = r.gift, sp = TR.GIFT.deductionSpouse;
+
+  $('sale-hint').textContent = p.sale !== p.value ? `증여 평가액보다 ${fmtMan(Math.abs(p.sale - p.value))} ${p.sale > p.value ? '높게' : '낮게'} 팔아요` : '증여 평가액과 같은 값에 판다고 봐요';
+  $('prior-hint').textContent = p.prior >= sp ? `공제 ${fmtMan(sp)}을 이미 다 썼어요` : `남은 공제 ${fmtMan(g.room)} — 이번 증여가 ${p.value > g.room ? `${fmtMan(p.value - g.room)} 넘어요` : '공제 안이에요'}`;
+
+  const whenTxt = p.when === 'within' ? '증여 후 1년 안에' : '증여 후 1년 지나서';
+  $('verdict').innerHTML = `<div class="v-k">결론 · ${whenTxt} 배우자가 팔 때</div>`
+    + (save > 0
+      ? `<div class="v-main">그대로 팔 때보다 세금이 <b>${fmtWon(save)}</b> 줄어요</div>`
+      : save < 0 ? `<div class="v-main">오히려 세금이 <b>${fmtWon(-save)}</b> 늘어요</div>` : `<div class="v-main">세금 차이가 없어요</div>`)
+    + `<div class="v-sub">내가 그대로 팔면 ${fmtWon(r.A.total)} · 배우자에게 주고 팔면 증여세 ${fmtWon(pick.gift)} + 양도세 ${fmtWon(pick.cgt)} = ${fmtWon(pick.total)}`
+    + (p.when === 'within' && r.C.carry ? '. 1년 안에 팔아 <b>이월과세</b>가 적용돼 절세 효과가 사라져요.' : '') + `</div>`;
+
+  $('s-a').textContent = fmtWon(r.A.total);
+  $('s-a-sub').textContent = `양도차익 ${fmtMan(r.A.gain)}`;
+  $('s-pick-l').textContent = `배우자에게 주고 ${p.when === 'within' ? '1년 안에' : '1년 지나'} 팔면`;
+  $('s-pick').textContent = fmtWon(pick.total);
+  $('s-pick-sub').textContent = `증여세 ${fmtWon(pick.gift)} + 양도세 ${fmtWon(pick.cgt)}`;
+  $('s-save').textContent = save >= 0 ? fmtWon(save) : '−' + fmtWon(-save);
+  $('s-save-sub').textContent = p.when === 'within' ? `1년 지나 팔면 ${fmtWon(r.saveB)}` : `1년 안에 팔면 ${fmtWon(r.saveC)}`;
+  $('s-gift').textContent = fmtWon(g.tax);
+  $('s-gift-sub').textContent = g.tax ? `10년 합산 ${fmtMan(g.agg)} − 공제 ${fmtMan(g.ded)} · 신고세액공제 반영` : `10년 합산 ${fmtMan(g.agg)} · 공제 ${fmtMan(sp)} 안`;
+
+  const al = [];
+  if (p.when === 'within' && r.C.carry) al.push(['warn', `<b>1년 안에 팔면 이월과세</b>가 적용돼요. 배우자가 팔아도 취득가액을 <b>내가 산 ${fmtMan(p.cost)}</b>으로 되돌려 계산하고, 증여세는 그대로 내요. 1년이 지난 뒤 팔면 세금이 <b>${fmtWon(r.C.total - r.B.total)}</b> 줄어요. 날짜는 여유 있게(증여일부터 1년이 넘은 결제일) 잡으세요.`]);
+  else if (p.when === 'within' && !r.C.carry) al.push(['info', '1년 안에 팔지만, 이월과세로 계산한 세금이 더 적어서 이월과세를 적용하지 않아요(소득세법 제97조의2②3호).']);
+  if (p.value > g.room) al.push(['warn', `10년 합산이 배우자 공제 ${fmtMan(sp)}을 넘어 증여세 <b>${fmtWon(g.tax)}</b>이 나와요. 공제 안(${fmtMan(g.room)})까지만 주고 나머지는 ${TR.GIFT.periodYears}년 뒤에 나눠 주는 방법도 있어요.`]);
+  if (save > 0 && p.when === 'after') al.push(['ok', `증여할 때까지 오른 <b>${fmtMan(Math.max(0, p.value - p.cost))}</b>은 증여 공제 안이라 양도세도, 증여세도 내지 않아요.`]);
+  if (p.cost >= p.value) al.push(['info', '내가 산 값이 증여 평가액보다 높아요(손실 중). 이럴 때는 증여보다 <b>내가 직접 팔아 손실을 다른 이익과 합치는 편</b>이 나을 수 있어요.']);
+  al.push(['info', '판 돈은 <b>배우자 계좌에 두고 배우자 돈으로</b> 쓰세요. 다시 증여한 사람이 가져가면 증여 자체를 인정받지 못하거나 증여자가 판 것으로 볼 수 있어요.']);
+  $('alerts').innerHTML = al.map(([k, h]) => `<div class="alert ${k}"><span class="ic">${k === 'warn' ? '!' : k === 'ok' ? '✓' : 'i'}</span><div>${h}</div></div>`).join('');
+
+  const diff = x => { const d = r.A.total - x.total; return d > 0 ? `<td class="save">${fmtWon(d)} 덜 냄</td>` : d < 0 ? `<td class="worse">${fmtWon(-d)} 더 냄</td>` : '<td>같음</td>'; };
+  const rows = [
+    ['내가 그대로 판다', r.A, '-', '', ''],
+    ['배우자에게 주고 1년 지나 판다', r.B, null, p.when === 'after' ? 'pick' : '', '배우자 취득가 = 증여 평가액'],
+    ['배우자에게 주고 1년 안에 판다', r.C, null, p.when === 'within' ? 'pick' : '', r.C.carry ? `이월과세 · 증여세 상당액 ${fmtWon(r.C.giftExp)} 비용` : '이월과세보다 세금이 많아 일반 계산'],
+  ];
+  $('cmp-table').querySelector('tbody').innerHTML = rows.map(([name, x, dash, cls, note]) => `<tr class="${cls}"><td class="kind"><b>${name}</b></td><td>${fmtMan(x.gain)}</td><td>${fmtWon(x.cgt)}</td><td>${fmtWon(x.gift)}</td><td class="tot">${fmtWon(x.total)}</td>${dash ? '<td>-</td>' : diff(x)}<td class="kind">${note}</td></tr>`).join('');
+
+  const th = f.th;
+  const fl = (v, over) => `<b>${fmtMan(v)}</b> <span class="${over ? 'over' : 'ok'}">${over ? `· ${fmtMan(th)} 넘음 → 종합과세` : '· 기준 아래'}</span>`;
+  $('fin-out').innerHTML = `<div>증여 전<br>나 ${fl(f.meBefore, f.overBefore[0])}<br>배우자 ${fl(f.spBefore, f.overBefore[1])}</div>`
+    + `<div>증여 후 (배당 ${fmtMan(f.div)} 옮김)<br>나 ${fl(f.meAfter, f.overAfter[0])}<br>배우자 ${fl(f.spAfter, f.overAfter[1])}</div>`;
+
+  renderChart(r);
+  renderInsight(p, r, pick, save);
+  saveLocal();
+}
+
+const FONT = { family: "'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" };
+function renderChart(r) {
+  if (typeof Chart === 'undefined') return;
+  if (chart) chart.destroy();
+  const L = ['그대로 판다', '주고 1년 지나', '주고 1년 안에'], X = [r.A, r.B, r.C];
+  chart = new Chart($('cmp-chart'), {
+    type: 'bar',
+    data: { labels: L, datasets: [
+      { label: '증여세', data: X.map(x => x.gift / 1e4), backgroundColor: '#C4A57B', stack: 's' },
+      { label: '양도세', data: X.map(x => x.cgt / 1e4), backgroundColor: '#D9542B', stack: 's' },
+    ] },
+    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { position: 'bottom', labels: { font: { ...FONT, size: 12, weight: 700 }, boxWidth: 12 } },
+        tooltip: { callbacks: { label: c => `${c.dataset.label}: ${fmtWon(c.raw * 1e4)}` } } },
+      scales: { y: { stacked: true, ticks: { font: { ...FONT, size: 12, weight: 700 } }, grid: { display: false } },
+        x: { stacked: true, beginAtZero: true, ticks: { font: { ...FONT, size: 11 }, callback: v => Math.round(v).toLocaleString() + '만' }, grid: { color: '#EDE5D8' } } } },
+  });
+}
+
+function renderInsight(p, r, pick, save) {
+  const li = [];
+  $('ins-title').innerHTML = save > 0 ? `증여하고 1년 기다리면 <em>${fmtWon(r.saveB)}</em>를 아껴요` : '증여는 오른 주식일 때, 1년 지나 팔 때 효과가 있어요';
+  li.push(`배우자에게 증여하면 그때 값이 <strong>배우자의 새 취득가</strong>가 돼요. 증여 전까지 오른 몫은 배우자 공제 ${fmtMan(TR.GIFT.deductionSpouse)}(10년) 안이면 세금이 없어요.`);
+  li.push('단, <strong>1년 안에 팔면 이월과세</strong>로 내가 산 값으로 되돌아가요(2025년 증여분부터). 증여 후 최소 1년은 기다리세요.');
+  li.push(`부부가 각자 해외주식 양도세 기본공제 ${fmtMan(TR.OVERSEAS_STOCK.basicDeduction)}을 받을 수 있고, 증여한 주식의 배당은 배우자 금융소득이라 종합과세 기준(${fmtMan(TR.FIN_INCOME.threshold)})도 나눠 쓸 수 있어요.`);
+  $('ins-desc').innerHTML = `<ul>${li.map(x => `<li>${x}</li>`).join('')}</ul>`;
+}
+
+/* ---- 저장·공유 ---- */
+function collect() { const o = { when: ST.when }; FIELDS.forEach(id => { o[id] = $(id).value; }); return o; }
+function setSeg(segId, key, v) { ST[key] = v; $(segId).querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === v)); }
+function apply(o) {
+  if (o.when === 'after' || o.when === 'within') setSeg('when-seg', 'when', o.when);
+  FIELDS.forEach(id => { if (o[id] != null) $(id).value = String(o[id]).replace(/[^0-9.,\-−]/g, '').slice(0, 15); });
+  document.querySelectorAll('input[data-man]').forEach(formatMan);
+}
+function saveLocal() { try { localStorage.setItem(STORE_KEY, JSON.stringify(collect())); } catch (e) {} }
+function formatMan(el) {
+  const neg = el.hasAttribute('data-neg') && /^\s*[-−–]/.test(el.value);
+  const raw = el.value.replace(/[^0-9]/g, '');
+  if (raw === '') { if (neg) el.value = '−'; return; }
+  const pos = el.value.length - (el.selectionStart ?? el.value.length);
+  el.value = (neg ? '−' : '') + Number(raw).toLocaleString();
+  try { if (document.activeElement === el) { const np = Math.max(0, el.value.length - pos); el.setSelectionRange(np, np); } } catch (e) {}
+}
+let timer = null;
+function schedule() { clearTimeout(timer); timer = setTimeout(render, 120); }
+document.querySelectorAll('input').forEach(el => {
+  el.addEventListener('input', () => { if (el.hasAttribute('data-man')) formatMan(el); schedule(); });
+  el.addEventListener('change', schedule);
+});
+$('when-seg').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { setSeg('when-seg', 'when', b.dataset.v); render(); }));
+$('share-btn').addEventListener('click', () => {
+  const url = location.origin + location.pathname + '?' + new URLSearchParams(collect()).toString();
+  const done = () => { const b = $('share-btn'); b.textContent = '복사했어요 ✓'; setTimeout(() => { b.textContent = '설정 링크 복사'; }, 1600); };
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, () => prompt('아래 주소를 복사하세요', url)); else prompt('아래 주소를 복사하세요', url);
+});
+$('reset-btn').addEventListener('click', () => {
+  FIELDS.forEach(id => { $(id).value = DEFAULTS[id]; });
+  setSeg('when-seg', 'when', 'after');
+  render();
+});
+$('copy-btn').addEventListener('click', () => {
+  if (!last) return;
+  const { p, r, pick, save } = last;
+  const lines = [
+    `[배우자 증여 절세 계산기 결과 · ${new Date().toISOString().slice(0, 10)}]`,
+    `· 해외주식 취득가 ${fmtMan(p.cost)} → 증여 평가액 ${fmtMan(p.value)} → ${p.when === 'within' ? '1년 안에' : '1년 지나'} ${fmtMan(p.sale)}에 매도`,
+    `· 그대로 팔면 양도세 ${fmtWon(r.A.total)}`,
+    `· 배우자에게 주고 팔면 증여세 ${fmtWon(pick.gift)} + 양도세 ${fmtWon(pick.cgt)} = ${fmtWon(pick.total)}`,
+    `· 차이 ${save >= 0 ? fmtWon(save) + ' 절세' : fmtWon(-save) + ' 더 냄'}`,
+    'https://ttokjaetv.github.io/spouse-gift/',
+  ].join('\n');
+  const b = $('copy-btn'); const ok = () => { b.textContent = '복사했어요 ✓'; setTimeout(() => { b.textContent = '결과 글로 복사'; }, 1600); };
+  if (navigator.clipboard) navigator.clipboard.writeText(lines).then(ok, () => prompt('복사하세요', lines)); else prompt('복사하세요', lines);
+});
+
+(function init() {
+  let o = null;
+  const q = new URLSearchParams(location.search);
+  if ([...q.keys()].length) { o = {}; q.forEach((v, k) => { o[k] = v; }); }
+  else { try { o = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { o = null; } }
+  if (o) apply(o);
+  render();
+})();
+</script>
+</body>
+</html>
