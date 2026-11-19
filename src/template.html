@@ -14,7 +14,7 @@
   .cmp-table td.save { color: var(--green); font-weight: 900; }
   .cmp-table td.worse { color: var(--blue, #2E5E8A); font-weight: 800; }
   .cmp-table tr.pick td { background: #FFF6EE; }
-  .cmp-table td.kind { text-align: left; font-size: 12.5px; color: var(--ink-soft); white-space: normal; }
+  .cmp-table td.kind { text-align: left; font-size: 12.5px; color: var(--ink-soft); white-space: normal; min-width: 120px; }
   .fin-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
   .fin-grid > div { background: var(--bg); border-radius: 14px; padding: 14px 16px; font-size: 14px; font-weight: 700; color: var(--ink-soft); line-height: 1.7; }
   .fin-grid b { color: var(--ink); }
@@ -117,7 +117,7 @@
     <div class="alerts" id="alerts"></div>
 
     <div class="sub-title">세 가지 방법 비교 <small>양도세는 지방소득세 포함</small></div>
-    <p class="scroll-hint" aria-hidden="true">← 옆으로 밀어 보세요 →</p>
+    <p class="scroll-hint sh-683" aria-hidden="true">← 옆으로 밀어 보세요 →</p>
     <div class="table-wrap"><table class="data-table cmp-table" id="cmp-table"><thead><tr><th>방법</th><th>양도차익</th><th>양도세</th><th>증여세</th><th>세금 합계</th><th>그대로 팔 때보다</th><th>비고</th></tr></thead><tbody></tbody></table></div>
   </div>
 
